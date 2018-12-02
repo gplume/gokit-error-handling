@@ -11,7 +11,6 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/ricardo-ch/rating-api/launchdarkly/featuretoggle"
 )
 
 const (

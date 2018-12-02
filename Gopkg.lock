@@ -10,14 +10,6 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
-  digest = "1:b9914f85d95a0968bafd1be1908ba29e2eafafd88d6fd13696be42bf5368c380"
-  name = "github.com/go-chi/chi"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b5294d10673813fac8558e7f47242bc9e61b4c25"
-  version = "v3.3.3"
-
-[[projects]]
   digest = "1:77807273cec5183f6d766542c6f30494a1146e988837c35c3279101bffef4747"
   name = "github.com/go-kit/kit"
   packages = [
@@ -47,6 +39,22 @@
   pruneopts = "UT"
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
+
+[[projects]]
+  digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
+  version = "v1.1.1"
+
+[[projects]]
+  digest = "1:e73f5b0152105f18bc131fba127d9949305c8693f8a762588a82a48f61756f5f"
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
+  version = "v1.6.2"
 
 [[projects]]
   branch = "master"
@@ -116,27 +124,18 @@
   pruneopts = "UT"
   revision = "aa55a523dc0a8297edf51bb75e8eec13eb3be45d"
 
-[[projects]]
-  branch = "master"
-  digest = "1:97c5aa6135a5d2b7524d074249cc0b5a07317fdd1da22c0705cf177305f1e1e1"
-  name = "github.com/ricardo-ch/rating-api"
-  packages = ["launchdarkly/featuretoggle"]
-  pruneopts = "UT"
-  revision = "85e7a4b537b7b262e18298051eb7294ede94173a"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/go-chi/chi",
     "github.com/go-kit/kit/endpoint",
     "github.com/go-kit/kit/log",
     "github.com/go-kit/kit/metrics",
     "github.com/go-kit/kit/metrics/prometheus",
     "github.com/go-kit/kit/transport/http",
+    "github.com/gorilla/mux",
     "github.com/pkg/errors",
     "github.com/prometheus/client_golang/prometheus",
-    "github.com/ricardo-ch/rating-api/launchdarkly/featuretoggle",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
