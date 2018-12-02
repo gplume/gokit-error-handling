@@ -19,10 +19,8 @@ const (
 )
 
 var (
-	errInternalServer       = errors.New("an internal server error occurred please contact the server's administrator")
-	errRatingToIsRequired   = errors.New("rating_to parameter is required")
-	errInvalidBody          = errors.New("invalid body")
-	errRatingValueIsInvalid = errors.New("invalid rating value")
+	errInternalServer = errors.New("an internal server error occurred please contact the server's administrator")
+	errInvalidBody    = errors.New("invalid body")
 )
 
 func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
