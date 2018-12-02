@@ -18,8 +18,7 @@ func (stringService) Uppercase(s string) (string, error) {
 	}
 	// panic("P A N I C")
 	// return strings.ToUpper(s), nil
-	err := errors.New("INSTANCE ERROR")
-	return "", errors.Wrap(err, "UPPERCASE error")
+	return "", errors.Wrap(ErrEmpty, "UPPERCASE error")
 	// return "", errors.New("UPPERCASE error")
 }
 

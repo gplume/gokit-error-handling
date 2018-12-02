@@ -4,14 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
+
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
-
-	"github.com/gorilla/mux"
 )
 
 const (
@@ -93,8 +93,7 @@ func MakeHTTPHandler(
 		r.Handle("/uppercase", uppercaseHandler).Methods(http.MethodPost)
 		r.Handle("/count", countHandler).Methods(http.MethodPost)
 	}
-	// return RecoverFromPanic(logger, r)
-	return r
+	return RecoverFromPanic(logger, r)
 }
 
 func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
@@ -105,8 +104,6 @@ func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 			fmt.Println("kithttp.StatusCoder:", sc)
 			code = sc.StatusCode()
 		}
-		fmt.Println("====== Unknown ERROR code:", code)
-		fmt.Println("====== Unknown ERROR:", err.Error())
 		switch err {
 		default:
 			logger.Log(
@@ -122,6 +119,8 @@ func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 		case sql.ErrNoRows:
 			code = http.StatusNotFound
 		}
+		// errors.Println(err)
+
 		w.WriteHeader(code)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": err.Error(),
@@ -131,7 +130,7 @@ func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 }
 
 // RecoverFromPanic is the Global recoverer in case of Panic.
-func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.HandlerFunc {
+func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if rec := recover(); rec != nil {
