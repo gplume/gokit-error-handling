@@ -10,6 +10,7 @@ import (
 
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -71,7 +72,6 @@ func MakeHTTPHandler(
 
 	logger = kitlog.With(logger, "component", componentName)
 	options := []kithttp.ServerOption{
-		kithttp.ServerBefore(populateContext),
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 		kithttp.ServerErrorEncoder(encodeError(logger)),
 	}
@@ -150,8 +150,4 @@ func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.HandlerFunc 
 		}()
 		next.ServeHTTP(w, r)
 	})
-}
-
-func populateContext(ctx context.Context, req *http.Request) context.Context {
-	return context.WithValue(ctx, featuretoggle.UserIDContextKey, req.Header.Get("X-User-ID"))
 }
