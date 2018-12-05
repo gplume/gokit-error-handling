@@ -3,28 +3,37 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"path"
 	"runtime"
 	"strings"
 )
 
-// import (
-// 	"bytes"
-// 	"fmt"
-// 	"runtime"
-// 	"strings"
-// )
-
 // Error ...
 type Error struct {
-	Code    string
+	Code    int
 	Message string
 	Op      string
 	Err     error
+	File    string
+	Line    int
 	Stack   *Stack
 }
 
 // assert Error implements the error interface.
-// var _ error = &Error{}
+var _ error = &Error{}
+
+// NewErr ...
+func NewErr(err error, msg string, code int) error {
+	_, w, ln, _ := runtime.Caller(0)
+
+	return &Error{
+		Code:    code,
+		Message: msg,
+		Err:     err,
+		File:    path.Base(w),
+		Line:    ln,
+	}
+}
 
 // Error implements the error interface.
 func (e *Error) Error() string {
@@ -33,6 +42,7 @@ func (e *Error) Error() string {
 	e.printStack(b)
 	pad(b, ": ")
 	b.WriteString(e.Message)
+	b.WriteString(fmt.Sprintf("\n %v: %v \n", e.File, e.Line))
 	if b.Len() == 0 {
 		return "no error"
 	}
