@@ -25,19 +25,20 @@ var _ error = &Error{}
 // NewErr ...
 func NewErr(err error, msg string, code int) error {
 	_, w, ln, _ := runtime.Caller(0)
-
-	return &Error{
+	er := &Error{
 		Code:    code,
 		Message: msg,
 		Err:     err,
 		File:    path.Base(w),
 		Line:    ln,
 	}
+	er.populateStack()
+	return er
+
 }
 
 // Error implements the error interface.
 func (e *Error) Error() string {
-	fmt.Println("+++++++++ ERRORS ______________")
 	b := new(bytes.Buffer)
 	e.printStack(b)
 	pad(b, ": ")

@@ -119,7 +119,7 @@ func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 		case sql.ErrNoRows:
 			code = http.StatusNotFound
 		}
-		// errors.Println(err)
+		fmt.Println(err)
 
 		w.WriteHeader(code)
 		json.NewEncoder(w).Encode(map[string]interface{}{

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"unicode/utf8"
 
 	"github.com/pkg/errors"
 )
@@ -27,7 +28,7 @@ func (stringService) Uppercase(s string) (string, error) {
 }
 
 func (stringService) Count(s string) int {
-	return len(s)
+	return utf8.RuneCountInString(s)
 }
 
 // ErrEmpty is returned when an input string is empty.
