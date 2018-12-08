@@ -133,7 +133,8 @@ func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if rec := recover(); rec != nil {
-				logger.Log("err", rec,
+				logger.Log(
+					"err", rec,
 					"http.url", r.RequestURI,
 					"http.path", r.URL.Path,
 					"http.method", r.Method,
