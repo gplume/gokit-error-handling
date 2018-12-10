@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"unicode/utf8"
 
 	"github.com/pkg/errors"
@@ -22,8 +21,9 @@ func (stringService) Uppercase(s string) (string, error) {
 	// panic("P A N I C")
 	// return strings.ToUpper(s), nil
 	// _, w, e, _ := runtime.Caller(0)
-	er := errors.New("U P - E R R O R")
-	return "", NewErr(er, "UPPERCASE error", http.StatusOK)
+	// panic("P A N I C")
+	return "", errors.Wrapf(ErrEmpty, "U P - E R R O R")
+	// return "", NewErr(er, "UPPERCASE error", http.StatusOK)
 	// return "", errors.New("UPPERCASE error")
 }
 

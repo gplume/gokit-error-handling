@@ -123,7 +123,7 @@ func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 
 		w.WriteHeader(code)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"error": err.Error(),
+			"error": fmt.Sprintf("%+v", err),
 		})
 	}
 }
