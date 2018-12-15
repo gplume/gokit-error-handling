@@ -10,6 +10,14 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  branch = "master"
+  digest = "1:2099049d052c80cc81243a4c5f691667161425d1cf6aa64b05d23f6bc640a0a3"
+  name = "github.com/bmizerany/pat"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6226ea591a40176dd3ff9cd8eff81ed6ca721a00"
+
+[[projects]]
   digest = "1:77807273cec5183f6d766542c6f30494a1146e988837c35c3279101bffef4747"
   name = "github.com/go-kit/kit"
   packages = [
@@ -41,20 +49,15 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
-  name = "github.com/gorilla/context"
-  packages = ["."]
+  branch = "master"
+  digest = "1:0ac4b93471647b522708d79f2bd087e73f4de1f42d8de2816a84f7caf4a129d4"
+  name = "github.com/gplume/no-mux"
+  packages = [
+    "logger",
+    "utils",
+  ]
   pruneopts = "UT"
-  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
-  version = "v1.1.1"
-
-[[projects]]
-  digest = "1:e73f5b0152105f18bc131fba127d9949305c8693f8a762588a82a48f61756f5f"
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
-  version = "v1.6.2"
+  revision = "108b946e65cdc9a811673d6b3e7abc963bf20b25"
 
 [[projects]]
   branch = "master"
@@ -128,12 +131,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/bmizerany/pat",
     "github.com/go-kit/kit/endpoint",
     "github.com/go-kit/kit/log",
-    "github.com/go-kit/kit/metrics",
     "github.com/go-kit/kit/metrics/prometheus",
     "github.com/go-kit/kit/transport/http",
-    "github.com/gorilla/mux",
+    "github.com/gplume/no-mux/utils",
     "github.com/pkg/errors",
     "github.com/prometheus/client_golang/prometheus",
   ]

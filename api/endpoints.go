@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -12,7 +12,8 @@ type Endpoints struct {
 	Count     endpoint.Endpoint
 }
 
-func makeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
+// MakeUppercaseEndpoint ...
+func MakeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(uppercaseRequest)
 		v, err := svc.Uppercase(req.S)
@@ -23,7 +24,8 @@ func makeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
 	}
 }
 
-func makeCountEndpoint(svc StringService) endpoint.Endpoint {
+// MakeCountEndpoint ...
+func MakeCountEndpoint(svc StringService) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(countRequest)
 		v := svc.Count(req.S)

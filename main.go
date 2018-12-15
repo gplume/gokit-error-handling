@@ -1,55 +1,73 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"github.com/gplume/gokit-error-handling/api"
 
 	kitlog "github.com/go-kit/kit/log"
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 )
 
 func main() {
-	logger := kitlog.NewJSONLogger(os.Stderr)
+	logger := kitlog.NewLogfmtLogger(os.Stderr)
 
-	fieldKeys := []string{"method", "error"}
-	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "my_group",
-		Subsystem: "string_service",
-		Name:      "request_count",
-		Help:      "Number of requests received.",
-	}, fieldKeys)
-	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "my_group",
-		Subsystem: "string_service",
-		Name:      "request_latency_microseconds",
-		Help:      "Total duration of requests in microseconds.",
-	}, fieldKeys)
-	countResult := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "my_group",
-		Subsystem: "string_service",
-		Name:      "count_result",
-		Help:      "The result of each count method.",
-	}, []string{}) // no fields here
+	// SERVICES
+	svc := api.StringService{}
 
-	var svc StringService
-	svc = stringService{}
 	// svc = loggingMiddleware{logger, svc}
-	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
+	// svc = api.Instrumenting{requestCount, requestLatency, countResult, svc}
 
-	e := Endpoints{
-		Uppercase: makeUppercaseEndpoint(svc),
-		Count:     makeCountEndpoint(svc),
+	// ENDPOINTS
+	e := api.Endpoints{
+		Uppercase: api.MakeUppercaseEndpoint(svc),
+		Count:     api.MakeCountEndpoint(svc),
 	}
 
-	r := MakeHTTPHandler(
+	// TRANSPORT
+	r := api.MakeHTTPHandler(
 		e,
 		logger,
 	)
 
-	http.ListenAndServe(":8080", r)
+	srv := &http.Server{
+		Addr: ":8080",
+		// It is good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		// Handler:      middle.RecoverFromPanic(logger, api),
+		Handler: r,
+	}
 
-	logger.Log("msg", "HTTP", "addr", ":8080")
-	logger.Log("err", http.ListenAndServe(":8080", nil))
+	// Run our server in a goroutine so that it doesn't block.
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			logger.Log(err)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
+	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
+	signal.Notify(c, os.Interrupt)
+	logger.Log("---ready---", "¡GO!")
+	// Block until we receive our signal.
+	<-c
+
+	// Create a deadline to wait for.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(5*time.Second))
+	defer cancel()
+	// Doesn't block if no connections, but will otherwise wait
+	// until the timeout deadline.
+	srv.Shutdown(ctx)
+	// Optionally, you could run srv.Shutdown in a goroutine and block on
+	// <-ctx.Done() if your application should wait for other services
+	// to finalize based on context cancellation.
+	logger.Log("shutting down")
+	os.Exit(0)
 }

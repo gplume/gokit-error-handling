@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/bmizerany/pat"
+	"github.com/gplume/gokit-error-handling/handle"
+	"github.com/gplume/gokit-error-handling/middle"
 	"github.com/pkg/errors"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -48,7 +50,7 @@ type uppercaseRequest struct {
 }
 
 type uppercaseResponse struct {
-	V   string `json:"v"`
+	V   string `json:"uppercased"`
 	Err string `json:"err,omitempty"`
 }
 
@@ -57,8 +59,18 @@ type countRequest struct {
 }
 
 type countResponse struct {
-	V int `json:"v"`
+	V int `json:"counted"`
 }
+
+// ---------------------------------------------------------------------------------------------------------
+
+// HTTPHandler contain routes handlers
+type HTTPHandler struct {
+	UpperCaseHandler http.Handler
+	CountHandler     http.Handler
+}
+
+// ---------------------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------
 
@@ -68,32 +80,73 @@ func MakeHTTPHandler(
 	logger kitlog.Logger,
 ) http.Handler {
 
-	logger = kitlog.With(logger, "component", componentName)
 	options := []kithttp.ServerOption{
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 		kithttp.ServerErrorEncoder(encodeError(logger)),
 	}
 
-	uppercaseHandler := kithttp.NewServer(
+	// uppercaseHandler := kithttp.NewServer(
+	// 	endpoints.Uppercase,
+	// 	decodeUppercaseRequest,
+	// 	encodeResponse,
+	// 	options...,
+	// )
+	homeHandler := middle.Ware(new(handle.Home),
+		middle.Notify(logger),
+	)
+	uppercaseHandler := middle.Ware(kithttp.NewServer(
 		endpoints.Uppercase,
 		decodeUppercaseRequest,
 		encodeResponse,
 		options...,
+	),
+		middle.Notify(logger),
 	)
 
-	countHandler := kithttp.NewServer(
+	countHandler := middle.Ware(kithttp.NewServer(
 		endpoints.Count,
 		decodeCountRequest,
 		encodeResponse,
 		options...,
+	),
+		middle.Notify(logger),
 	)
 
-	r := mux.NewRouter().StrictSlash(true)
+	/*************** PAT Muxer **************/
+	router := pat.New()
 	{
-		r.Handle("/uppercase", uppercaseHandler).Methods(http.MethodPost)
-		r.Handle("/count", countHandler).Methods(http.MethodPost)
+		router.Get("/", homeHandler)
+		router.Post("/uppercase", uppercaseHandler)
+		router.Post("/count", countHandler)
 	}
-	return RecoverFromPanic(logger, r)
+	return router
+
+	/*************** GORILLA/MUX **************/
+	// router := mux.NewRouter().StrictSlash(true)
+	// {
+	// 	router.Handle("/uppercase", uppercaseHandler).Methods(http.MethodPost)
+	// 	router.Handle("/count", countHandler).Methods(http.MethodPost)
+	// }
+	// return router
+
+	/************ NO-MUX *************/
+	// router := &handle.Handlers{
+	// 	// route: "/"
+	// 	HomeHandler: middle.Ware(new(handle.Home),
+	// 		middle.Notify(logger),
+	// 	),
+	// 	// route: "/uppercase"
+	// 	UpperCaseHandler: middle.Ware(
+	// 		&handle.UpperCaseHandler{KitHandler: uppercaseHandler},
+	// 		// middle.Notify(logger),
+	// 	),
+	// 	// route: "/count"
+	// 	CharCountHandler: middle.Ware(
+	// 		&handle.CharCountHandler{KitHandler: countHandler},
+	// 		// middle.Notify(logger),
+	// 	),
+	// }
+	// return router
 }
 
 func encodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
