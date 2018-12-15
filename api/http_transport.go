@@ -119,7 +119,7 @@ func MakeHTTPHandler(
 		router.Post("/uppercase", uppercaseHandler)
 		router.Post("/count", countHandler)
 	}
-	return router
+	return RecoverFromPanic(logger, router)
 
 	/*************** GORILLA/MUX **************/
 	// router := mux.NewRouter().StrictSlash(true)
