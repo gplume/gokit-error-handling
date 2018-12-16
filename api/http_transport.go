@@ -10,6 +10,7 @@ import (
 	"github.com/bmizerany/pat"
 	"github.com/gplume/gokit-error-handling/handle"
 	"github.com/gplume/gokit-error-handling/middle"
+	"github.com/gplume/gokit-error-handling/utils"
 	"github.com/pkg/errors"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -115,7 +116,15 @@ func MakeHTTPHandler(
 	/*************** PAT Muxer **************/
 	router := pat.New()
 	{
+		router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": fmt.Sprintf("route (%s) not found, sorry", r.URL.Path)})
+		})
 		router.Get("/", homeHandler)
+		router.Get("/uppercase", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": "HOME!"})
+			return
+		}))
+		router.Get("/:ppat", homeHandler)
 		router.Post("/uppercase", uppercaseHandler)
 		router.Post("/count", countHandler)
 	}

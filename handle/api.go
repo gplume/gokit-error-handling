@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gplume/no-mux/utils"
+	"github.com/gplume/gokit-error-handling/utils"
 )
 
 // Handlers ...
