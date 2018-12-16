@@ -63,18 +63,6 @@ type countResponse struct {
 	V int `json:"counted"`
 }
 
-// ---------------------------------------------------------------------------------------------------------
-
-// HTTPHandler contain routes handlers
-type HTTPHandler struct {
-	UpperCaseHandler http.Handler
-	CountHandler     http.Handler
-}
-
-// ---------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------------------------------
-
 // MakeHTTPHandler returns all http handler for the user service
 func MakeHTTPHandler(
 	endpoints Endpoints,
@@ -86,15 +74,10 @@ func MakeHTTPHandler(
 		kithttp.ServerErrorEncoder(encodeError(logger)),
 	}
 
-	// uppercaseHandler := kithttp.NewServer(
-	// 	endpoints.Uppercase,
-	// 	decodeUppercaseRequest,
-	// 	encodeResponse,
-	// 	options...,
-	// )
 	homeHandler := middle.Ware(new(handle.Home),
 		middle.Notify(logger),
 	)
+
 	uppercaseHandler := middle.Ware(kithttp.NewServer(
 		endpoints.Uppercase,
 		decodeUppercaseRequest,
@@ -113,7 +96,7 @@ func MakeHTTPHandler(
 		middle.Notify(logger),
 	)
 
-	/*************** PAT Muxer **************/
+	/*************** PAT Muxer *****************/
 	router := pat.New()
 	{
 		router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +111,7 @@ func MakeHTTPHandler(
 		router.Post("/uppercase", uppercaseHandler)
 		router.Post("/count", countHandler)
 	}
-	return RecoverFromPanic(logger, router)
+	return router
 
 	/*************** GORILLA/MUX **************/
 	// router := mux.NewRouter().StrictSlash(true)
@@ -138,7 +121,7 @@ func MakeHTTPHandler(
 	// }
 	// return router
 
-	/************ NO-MUX *************/
+	/*************** NO-MUX *******************/
 	// router := &handle.Handlers{
 	// 	// route: "/"
 	// 	HomeHandler: middle.Ware(new(handle.Home),

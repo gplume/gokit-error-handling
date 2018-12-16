@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gplume/gokit-error-handling/api"
+	"github.com/gplume/gokit-error-handling/middle"
 
 	kitlog "github.com/go-kit/kit/log"
 )
@@ -15,11 +16,8 @@ import (
 func main() {
 	logger := kitlog.NewLogfmtLogger(os.Stderr)
 
-	// SERVICES
+	// SERVICE
 	svc := api.StringService{}
-
-	// svc = loggingMiddleware{logger, svc}
-	// svc = api.Instrumenting{requestCount, requestLatency, countResult, svc}
 
 	// ENDPOINTS
 	e := api.Endpoints{
@@ -40,11 +38,10 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		// Handler:      middle.RecoverFromPanic(logger, api),
-		Handler: r,
+		Handler: middle.RecoverFromPanic(logger, r),
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
-
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Log(err)
@@ -68,6 +65,6 @@ func main() {
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// <-ctx.Done() if your application should wait for other services
 	// to finalize based on context cancellation.
-	logger.Log("shutting down")
+	logger.Log("shutting down", ctx)
 	os.Exit(0)
 }
