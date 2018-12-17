@@ -31,7 +31,6 @@ func (h *Home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				"msg": "WELCOME SECOND",
 			})
 			return
-
 		}
 	}
 	utils.JSON(w, http.StatusNotFound, utils.JSMAP{
