@@ -10,6 +10,14 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  branch = "master"
+  digest = "1:2099049d052c80cc81243a4c5f691667161425d1cf6aa64b05d23f6bc640a0a3"
+  name = "github.com/bmizerany/pat"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6226ea591a40176dd3ff9cd8eff81ed6ca721a00"
+
+[[projects]]
   digest = "1:77807273cec5183f6d766542c6f30494a1146e988837c35c3279101bffef4747"
   name = "github.com/go-kit/kit"
   packages = [
@@ -39,14 +47,6 @@
   pruneopts = "UT"
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
-
-[[projects]]
-  digest = "1:4f2f31064b2690642c8ac1316c09559b205f2d483256b34ad95e0e57edfbcb99"
-  name = "github.com/husobee/vestigo"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f8f5b5dc2bd74408887fd4b462055e324c4cbd63"
-  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -120,11 +120,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/bmizerany/pat",
     "github.com/go-kit/kit/endpoint",
     "github.com/go-kit/kit/log",
     "github.com/go-kit/kit/metrics/prometheus",
     "github.com/go-kit/kit/transport/http",
-    "github.com/husobee/vestigo",
     "github.com/pkg/errors",
     "github.com/prometheus/client_golang/prometheus",
   ]

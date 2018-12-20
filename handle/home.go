@@ -2,6 +2,7 @@ package handle
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gplume/gokit-error-handling/utils"
@@ -13,9 +14,10 @@ type Home struct{}
 // HomeHandler implements ServeHTPP to return an http.Handler (interface satisfying)
 func (h *Home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	head, _ := utils.CutPath(r.URL.Path)
+	log.Println("head:", head)
 	switch {
-	case head == "/":
-		utils.JSON(w, http.StatusNotFound, utils.JSMAP{
+	case head == "":
+		utils.JSON(w, http.StatusOK, utils.JSMAP{
 			"msg": "WELCOME TO THE API!",
 		})
 		return

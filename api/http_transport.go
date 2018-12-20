@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-zoo/bone"
 	"github.com/gplume/gokit-error-handling/handle"
 	"github.com/gplume/gokit-error-handling/middle"
 	"github.com/gplume/gokit-error-handling/utils"
-	"github.com/husobee/vestigo"
 	"github.com/pkg/errors"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -97,13 +97,15 @@ func MakeHTTPHandler(
 	)
 
 	/*************** Vestigo Muxer *****************/
-
-	router := vestigo.NewRouter()
-	router.Get("/", homeHandler.(http.HandlerFunc))
-	router.Get("/uppercase", theHome)
-	router.Get("/:ppat", homeHandler.(http.HandlerFunc))
-	router.Post("/uppercase", uppercaseHandler.(http.HandlerFunc))
-	router.Post("/count", countHandler.(http.HandlerFunc))
+	// vestigo.CustomNotFoundHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": fmt.Sprintf("route (%s) not found, sorry", r.URL.Path)})
+	// })
+	router := bone.New()
+	router.Get("/", homeHandler)
+	router.GetFunc("/uppercase", theHome)
+	router.Get("/:ppat", homeHandler)
+	router.Post("/uppercase", uppercaseHandler)
+	router.Post("/count", countHandler)
 	return router
 
 	/*************** PAT Muxer *****************/
@@ -204,6 +206,6 @@ func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.Handler {
 }
 
 func theHome(w http.ResponseWriter, r *http.Request) {
-	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": "HOME!"})
+	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": "UPPERCASE HOME!"})
 	return
 }
