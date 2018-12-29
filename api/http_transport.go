@@ -101,8 +101,8 @@ func MakeHTTPHandler(
 	// 	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": fmt.Sprintf("route (%s) not found, sorry", r.URL.Path)})
 	// })
 	router := bone.New()
-	router.Get("/", homeHandler)
-	router.GetFunc("/uppercase", theHome)
+	// router.Get("/", homeHandler)
+	router.GetFunc("/uppercase", uppercaseHome)
 	router.Get("/:ppat", homeHandler)
 	router.Post("/uppercase", uppercaseHandler)
 	router.Post("/count", countHandler)
@@ -205,7 +205,7 @@ func RecoverFromPanic(logger kitlog.Logger, next http.Handler) http.Handler {
 	})
 }
 
-func theHome(w http.ResponseWriter, r *http.Request) {
+func uppercaseHome(w http.ResponseWriter, r *http.Request) {
 	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": "UPPERCASE HOME!"})
 	return
 }
