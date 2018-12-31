@@ -1,6 +1,6 @@
 package errs
 
-import "errors"
+import "github.com/pkg/errors"
 
 var (
 	// ErrInternalServer ...

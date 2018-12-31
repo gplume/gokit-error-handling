@@ -1,12 +1,13 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/pkg/errors"
 
 	"github.com/gplume/gokit-error-handling/errs"
 )

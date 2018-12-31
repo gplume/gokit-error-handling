@@ -22,7 +22,8 @@ const (
 func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request uppercaseRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
+		return nil, errs.New(err, "error decoding uppercase request", http.StatusBadRequest)
+
 	}
 	return request, nil
 }
@@ -30,7 +31,7 @@ func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, er
 func decodeCountRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request countRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
+		return nil, errs.New(err, "error decoding count request", http.StatusBadRequest)
 	}
 	return request, nil
 }
