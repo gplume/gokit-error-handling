@@ -13,7 +13,7 @@ type Endpoints struct {
 }
 
 // MakeUppercaseEndpoint ...
-func MakeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
+func MakeUppercaseEndpoint(svc Service) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(uppercaseRequest)
 		v, err := svc.Uppercase(req.S)
@@ -25,10 +25,10 @@ func MakeUppercaseEndpoint(svc StringService) endpoint.Endpoint {
 }
 
 // MakeCountEndpoint ...
-func MakeCountEndpoint(svc StringService) endpoint.Endpoint {
+func MakeCountEndpoint(svc Service) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(countRequest)
-		v := svc.Count(req.S)
-		return countResponse{v}, nil
+		v, err := svc.Count(req.S)
+		return countResponse{v}, err
 	}
 }

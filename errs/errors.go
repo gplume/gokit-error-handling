@@ -1,4 +1,4 @@
-package main
+package errs
 
 import (
 	"bytes"
@@ -10,32 +10,17 @@ import (
 
 // Error ...
 type Error struct {
-	Code    int
-	Message string
-	Op      string
 	Err     error
-	File    string
-	Line    int
+	Message string
+	Code    int
+	Caller  string
 	Stack   *Stack
 }
 
 // assert Error implements the error interface.
+// so you can pass *Error to the normal 'error' of std library
+// waited by your usual code or libraries like go-kit...
 var _ error = &Error{}
-
-// NewErr ...
-func NewErr(err error, msg string, code int) error {
-	_, w, ln, _ := runtime.Caller(0)
-	er := &Error{
-		Code:    code,
-		Message: msg,
-		Err:     err,
-		File:    path.Base(w),
-		Line:    ln,
-	}
-	er.populateStack()
-	return er
-
-}
 
 // Error implements the error interface.
 func (e *Error) Error() string {
@@ -43,11 +28,27 @@ func (e *Error) Error() string {
 	e.printStack(b)
 	pad(b, ": ")
 	b.WriteString(e.Message)
-	b.WriteString(fmt.Sprintf("\n %v: %v \n", e.File, e.Line))
 	if b.Len() == 0 {
 		return "no error"
 	}
 	return b.String()
+}
+
+// New intanciates the error on place so we have a precise caller
+// note the now *Error pass through as an std 'error' type...
+func New(err error, msg string, code int) error {
+	_, w, ln, ok := runtime.Caller(1)
+	er := &Error{
+		Code:    code,
+		Message: msg,
+		Err:     err,
+	}
+	if ok {
+		er.Caller = fmt.Sprintf("%s:%d", path.Base(w), ln)
+	}
+	er.populateStack()
+	return er
+
 }
 
 // Stack ...

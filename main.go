@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/gplume/gokit-error-handling/api"
@@ -14,10 +16,16 @@ import (
 )
 
 func main() {
-	logger := kitlog.NewLogfmtLogger(os.Stderr)
+	errc := make(chan error)
+	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
+	// logger := kitlog.NewLogfmtLogger(os.Stderr)
 
 	// SERVICE
-	svc := api.StringService{}
+	svc, err := api.NewStringService(nil)
+	if err != nil {
+		logger.Log("error", err)
+		errc <- err
+	}
 
 	// ENDPOINTS
 	e := api.Endpoints{
@@ -37,15 +45,20 @@ func main() {
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		// Handler:      middle.RecoverFromPanic(logger, api),
-		Handler: middle.RecoverFromPanic(logger, r),
+		Handler:      middle.RecoverFromPanic(logger, r),
 	}
+
+	// Interrupt handler
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errc <- fmt.Errorf("%s", <-c)
+		<-c
+	}()
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
-			logger.Log(err)
-		}
+		errc <- srv.ListenAndServe()
 	}()
 
 	c := make(chan os.Signal, 1)
@@ -55,7 +68,6 @@ func main() {
 	logger.Log("---ready---", "¡GO!")
 	// Block until we receive our signal.
 	<-c
-
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(5*time.Second))
 	defer cancel()
@@ -67,4 +79,5 @@ func main() {
 	// to finalize based on context cancellation.
 	logger.Log("shutting down", ctx)
 	os.Exit(0)
+	fmt.Println("exit", <-errc)
 }
