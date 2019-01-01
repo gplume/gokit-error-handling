@@ -14,14 +14,14 @@ func init() {
 	startLoggingUnderLevel = end
 }
 
-var startLoggingUnderLevel Level
+var startLoggingUnderLevel level
 
 // Error ...
 type Error struct {
 	Err     error
 	Message string
 	Code    int
-	Level   Level // from 1 to 10 up to you to decide the priority...
+	Level   level // from 1 to 10 up to you to decide the priority...
 	Caller  string
 	Stack   *Stack
 }
@@ -47,10 +47,10 @@ func (e *Error) Error() string {
 // note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
 func New(args ...interface{}) error {
 	var (
-		err   error
-		msg   string
-		code  int
-		level Level
+		err  error
+		msg  string
+		code int
+		lvl  level
 	)
 	for _, v := range args {
 		switch v.(type) {
@@ -73,8 +73,8 @@ func New(args ...interface{}) error {
 				} else {
 					code = http.StatusInternalServerError
 				}
-				if er.Level < Level(end) {
-					level = er.Level
+				if er.Level < level(end) {
+					lvl = er.Level
 				}
 			} else {
 				err = v.(error)
@@ -85,15 +85,15 @@ func New(args ...interface{}) error {
 			if v.(int) > int(end) {
 				code = v.(int)
 			}
-		case Level:
-			if v.(Level) > Level(Undefined) && v.(Level) <= Level(end) {
-				level = v.(Level)
+		case level:
+			if v.(level) > level(Undefined) && v.(level) <= level(end) {
+				lvl = v.(level)
 			}
 		}
 	}
 	er := &Error{
 		Code:    code,
-		Level:   level,
+		Level:   lvl,
 		Message: msg,
 		Err:     err,
 	}

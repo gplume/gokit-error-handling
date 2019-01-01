@@ -6,12 +6,12 @@ import (
 	"strconv"
 )
 
-// Level of the error
-type Level int
+// level of the error
+type level int
 
 // Error level definition
 const (
-	Undefined Level = iota // == 0
+	Undefined level = iota // == 0
 	Critical               // 1...
 	_
 	High // 3
@@ -24,7 +24,7 @@ const (
 	end
 )
 
-func (l Level) String() string {
+func (l level) String() string {
 	switch l {
 	case Undefined:
 		return "Undefined"

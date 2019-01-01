@@ -35,7 +35,7 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 					"message", err.(*Error).Message,
 					"error", err.(*Error).Err,
 					"code", err.(*Error).Code,
-					"level", Level(err.(*Error).Level).String(),
+					"level", level(err.(*Error).Level).String(),
 				}
 				if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
 					obj = append(obj, "stack", err.Error())
