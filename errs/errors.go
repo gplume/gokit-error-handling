@@ -2,7 +2,6 @@ package errs
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -49,8 +48,8 @@ func New(args ...interface{}) error {
 		switch v.(type) {
 		case error:
 			if er, ok := v.(*Error); ok {
-				it, _ := json.MarshalIndent(&er, "", "\t")
-				fmt.Printf("%s", it)
+				// it, _ := json.MarshalIndent(&er, "", "\t")
+				// fmt.Printf("%s", it)
 				if er.Err != nil {
 					err = er.Err
 				} else {
@@ -86,7 +85,6 @@ func New(args ...interface{}) error {
 	}
 	er.populateStack()
 	return er
-
 }
 
 // Stack ...
@@ -100,13 +98,14 @@ func (e *Error) populateStack() {
 	e.Stack = &Stack{Callers: callers()}
 }
 
+const separator = ":\r\n\t"
+
 // printStack formats and prints the stack for this Error to the given buffer.
 // It should be called from the Error's Error method.
 func (e *Error) printStack(b *bytes.Buffer) {
 	if e.Stack == nil {
 		return
 	}
-
 	printCallers := callers()
 
 	// Iterate backward through e.Stack.Callers (the last in the stack is the
@@ -181,8 +180,6 @@ func callers() []uintptr {
 	n := runtime.Callers(skip, stk[:])
 	return stk[:n]
 }
-
-var separator = ":\n\t"
 
 // pad appends str to the buffer if the buffer already has some data.
 func pad(b *bytes.Buffer, str string) {

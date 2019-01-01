@@ -11,7 +11,7 @@ import (
 )
 
 // EncodeError ...
-func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
+func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 	return func(ctx context.Context, err error, w http.ResponseWriter) {
 		code := http.StatusInternalServerError
 		httperr := []interface{}{
@@ -35,7 +35,7 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 				"error", err.(*Error).Err,
 				"code", fmt.Sprintf("%v", err.(*Error).Code),
 			}
-			if err.(*Error).Caller == "" && err.Error() != "" {
+			if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
 				obj = append(obj, "stack", err.Error())
 			}
 			httperr = append(httperr, obj...)

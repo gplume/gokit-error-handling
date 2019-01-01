@@ -20,9 +20,7 @@ var (
 	ErrSpecific = &Error{
 		Message: "Message for the specific error",
 		Code:    http.StatusBadRequest,
-		// will be filled at runtime but still can be here:
-		Err: errors.New("s p e c i f i c"),
-		// automatic from here:
+		// will be automatically filled at runtime:
 		// Caller:
 		// Stack:
 	}

@@ -34,7 +34,8 @@ func (stringService) Uppercase(s string) (string, error) {
 		return s, errs.New(errs.ErrSpecific)
 	}
 	if s == "specifics" {
-		return s, errs.New(" s p e c i f i c s... .. . .. ... .. .")
+		_, specErr := strconv.Atoi(s)
+		return s, errs.New(specErr, errs.ErrInternalServer.Error())
 	}
 	return strings.ToUpper(s), nil
 }
