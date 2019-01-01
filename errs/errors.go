@@ -86,7 +86,7 @@ func New(args ...interface{}) error {
 				code = v.(int)
 			}
 		case level:
-			if v.(level) > level(Undefined) && v.(level) <= level(end) {
+			if v.(level) >= level(Undefined) && v.(level) <= level(end) {
 				lvl = v.(level)
 			}
 		}
