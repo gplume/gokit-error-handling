@@ -16,7 +16,7 @@ var (
 		Code:    http.StatusBadRequest,
 		Message: "invalid body",
 	}
-	// ErrSpecific is throed in case of specifi error
+	// ErrSpecific is thrown in case of specific error
 	ErrSpecific = &Error{
 		Message: "Message for the specific error",
 		Code:    http.StatusBadRequest,
