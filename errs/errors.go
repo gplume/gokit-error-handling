@@ -100,8 +100,10 @@ func New(args ...interface{}) error {
 	_, file, ln, ok := runtime.Caller(1)
 	if ok {
 		er.Caller = fmt.Sprintf("%s:%d", path.Base(file), ln)
+	} else {
+		er.populateStack()
+		er.Caller = er.Error()
 	}
-	er.populateStack()
 	return er
 }
 
