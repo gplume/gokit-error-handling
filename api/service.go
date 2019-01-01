@@ -20,9 +20,7 @@ type stringService struct {
 
 // NewStringService returns a wrapped service with validation layer
 func NewStringService() (Service, error) {
-	svc := Service(stringService{})
-	svc = newValidationService(svc)
-	return svc, nil
+	return newValidationService(Service(stringService{})), nil
 }
 
 // Uppercase ...
