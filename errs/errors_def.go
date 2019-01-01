@@ -12,15 +12,11 @@ type level int
 // Error level definition
 const (
 	Undefined level = iota // == 0
-	Critical               // 1...
-	_
-	High // 3
-	_
-	Medium // 5
-	_
-	_
-	_
-	Low // 9
+	Critical
+	High
+	Medium
+	Low
+	UserOnly
 	end
 )
 
@@ -34,6 +30,8 @@ func (l level) String() string {
 		return "High"
 	case Medium:
 		return "Medium"
+	case UserOnly:
+		return "UserOnly"
 	case Low:
 		return "Low"
 	default:
