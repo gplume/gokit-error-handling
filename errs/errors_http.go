@@ -2,7 +2,6 @@ package errs
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,46 +14,66 @@ import (
 func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 	return func(ctx context.Context, err error, w http.ResponseWriter) {
 		code := http.StatusInternalServerError
+		httperr := []interface{}{
+			"http.url", ctx.Value(kithttp.ContextKeyRequestURI),
+			"http.method", ctx.Value(kithttp.ContextKeyRequestMethod),
+			"http.user_agent", ctx.Value(kithttp.ContextKeyRequestUserAgent),
+			"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
+			// following uneeded? why would we want only a part of the url anyway?
+			// "http.path", ctx.Value(kithttp.ContextKeyRequestPath),
+		}
 		switch err {
+		// case ErrInvalidBody:
+		// 	code = http.StatusBadRequest
+		// case sql.ErrNoRows:
+		// 	code = http.StatusNotFound
 		case err.(*Error):
-			fmt.Println("-----errs.errrorrrr-----")
-			logger.Log(
+			// fmt.Println("-----from errs.pkg-----")
+			obj := []interface{}{
 				"caller", err.(*Error).Caller,
 				"message", err.(*Error).Message,
 				"error", err.(*Error).Err,
 				"code", fmt.Sprintf("%v", err.(*Error).Code),
-				"http.url", ctx.Value(kithttp.ContextKeyRequestURI),
-				"http.path", ctx.Value(kithttp.ContextKeyRequestPath),
-				"http.method", ctx.Value(kithttp.ContextKeyRequestMethod),
-				"http.user_agent", ctx.Value(kithttp.ContextKeyRequestUserAgent),
-				"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
-				// "stack", err.Error(),
-			)
+			}
+			if err.(*Error).Caller == "" && err.Error() != "" {
+				obj = append(obj, "stack", err.Error())
+			}
+			httperr = append(httperr, obj...)
+			logger.Log(httperr...)
 			if errCode := err.(*Error).Code; errCode > 0 {
 				code = errCode
 			}
+
 		default:
-			fmt.Println("-----errrorrrr-----")
-			logger.Log(
+			// fmt.Println("-----std.errors-----")
+			obj := []interface{}{
 				"error", err.Error(),
-				"http.url", ctx.Value(kithttp.ContextKeyRequestURI),
-				"http.path", ctx.Value(kithttp.ContextKeyRequestPath),
-				"http.method", ctx.Value(kithttp.ContextKeyRequestMethod),
-				"http.user_agent", ctx.Value(kithttp.ContextKeyRequestUserAgent),
-				"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
 				"stack", fmt.Sprintf("%+v", err),
-			)
-		case ErrInvalidBody:
-			code = http.StatusBadRequest
-		case sql.ErrNoRows:
-			code = http.StatusNotFound
+			}
+			httperr = append(httperr, obj...)
+			logger.Log(httperr...)
 		}
+
+		// Now we print to the client:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(code)
-		msg := err.Error()
-		if er, isit := err.(*Error); isit {
+		// defaults the error message content
+		var msg string
+		// if from errs.pkg then retreive Message if not empty
+		// or do some specific standardization message sorting
+		if er, itis := err.(*Error); itis && er.Message != "" {
 			msg = er.Message
 		}
+		// this should be removed for more granularity:
+		// switch code {
+		// case http.StatusBadRequest:
+		// 	msg = ErrInvalidBody.Error()
+		// case http.StatusInternalServerError:
+		// 	msg = ErrInternalServer.Error()
+		// 	// ...etc
+		// }
+
+		// response
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": fmt.Sprintf("%s", msg),
 		})

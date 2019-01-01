@@ -16,11 +16,11 @@ import (
 
 func main() {
 	errc := make(chan error)
-	// logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
-	logger := kitlog.NewLogfmtLogger(os.Stderr)
+	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
+	// logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
 
 	// SERVICE
-	svc, err := api.NewStringService(logger)
+	svc, err := api.NewStringService()
 	if err != nil {
 		logger.Log("error", err)
 		os.Exit(1)

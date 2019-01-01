@@ -1,6 +1,9 @@
 package errs
 
-import "github.com/pkg/errors"
+import (
+	"errors"
+	"net/http"
+)
 
 var (
 	// ErrInternalServer ...
@@ -8,5 +11,19 @@ var (
 	// ErrInvalidBody ...
 	ErrInvalidBody = errors.New("invalid body")
 	// ErrEmpty is returned when an input string is empty.
-	ErrEmpty = errors.New("empty string")
+	ErrEmpty = &Error{
+		Err:     errors.New("empty parameter"),
+		Code:    http.StatusBadRequest,
+		Message: "invalid body",
+	}
+	// ErrSpecific is throed in case of specifi error
+	ErrSpecific = &Error{
+		Message: "Message for the specific error",
+		Code:    http.StatusBadRequest,
+		// will be filled at runtime but still can be here:
+		Err: errors.New("s p e c i f i c"),
+		// automatic from here:
+		// Caller:
+		// Stack:
+	}
 )

@@ -2,7 +2,10 @@ package errs
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 	"path"
 	"runtime"
 	"strings"
@@ -18,11 +21,11 @@ type Error struct {
 }
 
 // assert Error implements the error interface.
-// so you can pass *Error to the normal 'error' of std library
-// waited by your usual code or libraries like go-kit...
+// this way you can pass *Error type to the normal 'error'
+// of std library awaited by your usual code or libraries like go-kit...
 var _ error = &Error{}
 
-// Error implements the error interface.
+// *Error implements the error interface.
 func (e *Error) Error() string {
 	b := new(bytes.Buffer)
 	e.printStack(b)
@@ -34,15 +37,50 @@ func (e *Error) Error() string {
 	return b.String()
 }
 
-// New intanciates the error on place so we have a precise caller
-// note the now *Error pass through as an std 'error' type...
-func New(err error, msg string, code int) error {
-	_, w, ln, ok := runtime.Caller(1)
+// New intanciates the error on place so we have the precise 'human-coded' caller
+// note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
+func New(args ...interface{}) error {
+	var (
+		err  error
+		msg  string
+		code int
+	)
+	for _, v := range args {
+		switch v.(type) {
+		case error:
+			if er, ok := v.(*Error); ok {
+				it, _ := json.MarshalIndent(&er, "", "\t")
+				fmt.Printf("%s", it)
+				if er.Err != nil {
+					err = er.Err
+				} else {
+					err = errors.New("undefined error")
+				}
+				if er.Message != "" {
+					msg = er.Message
+				} else {
+					msg = "undefined error message"
+				}
+				if er.Code > 0 {
+					code = er.Code
+				} else {
+					code = http.StatusInternalServerError
+				}
+			} else {
+				err = v.(error)
+			}
+		case string:
+			msg = v.(string)
+		case int:
+			code = v.(int)
+		}
+	}
 	er := &Error{
 		Code:    code,
 		Message: msg,
 		Err:     err,
 	}
+	_, w, ln, ok := runtime.Caller(1)
 	if ok {
 		er.Caller = fmt.Sprintf("%s:%d", path.Base(w), ln)
 	}

@@ -7,9 +7,7 @@ import (
 
 	"github.com/go-zoo/bone"
 	"github.com/gplume/gokit-error-handling/errs"
-	"github.com/gplume/gokit-error-handling/handle"
 	"github.com/gplume/gokit-error-handling/middle"
-	"github.com/gplume/gokit-error-handling/utils"
 
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -22,8 +20,7 @@ const (
 func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request uppercaseRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, errs.New(err, "error decoding uppercase request", http.StatusBadRequest)
-
+		return nil, errs.New("error decoding uppercase request", err, 500)
 	}
 	return request, nil
 }
@@ -41,7 +38,7 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 }
 
 type uppercaseRequest struct {
-	S string `json:"s"`
+	S string `json:"string"`
 }
 
 type uppercaseResponse struct {
@@ -50,7 +47,7 @@ type uppercaseResponse struct {
 }
 
 type countRequest struct {
-	S string `json:"s"`
+	S string `json:"string"`
 }
 
 type countResponse struct {
@@ -67,17 +64,14 @@ func MakeHTTPHandler(
 		kithttp.ServerErrorEncoder(errs.EncodeError(logger)),
 	}
 
-	homeHandler := middle.Ware(new(handle.Home),
-		middle.Notify(logger),
-	)
-
 	uppercaseHandler := middle.Ware(kithttp.NewServer(
 		endpoints.Uppercase,
 		decodeUppercaseRequest,
 		encodeResponse,
 		options...,
 	),
-		middle.Notify(logger),
+		middle.Notify(),
+		// ...
 	)
 
 	countHandler := middle.Ware(kithttp.NewServer(
@@ -86,20 +80,12 @@ func MakeHTTPHandler(
 		encodeResponse,
 		options...,
 	),
-		middle.Notify(logger),
+		middle.Notify(),
 	)
 
 	/*************** Bone Muxer *****************/
 	router := bone.New()
-	router.Get("/", homeHandler)
-	router.GetFunc("/uppercase", uppercaseHome)
-	router.Get("/:ppat", homeHandler)
 	router.Post("/uppercase", uppercaseHandler)
 	router.Post("/count", countHandler)
 	return router
-}
-
-func uppercaseHome(w http.ResponseWriter, r *http.Request) {
-	utils.JSON(w, http.StatusOK, utils.JSMAP{"msg": "UPPERCASE HOME!"})
-	return
 }

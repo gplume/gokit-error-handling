@@ -9,7 +9,7 @@ type Wrapper func(http.Handler) http.Handler
 
 // Ware ...
 func Ware(h http.Handler, wrappers ...Wrapper) http.Handler {
-	// reverse order (onion):
+	// reverse order (onion style):
 	for _, warp := range wrappers {
 		h = warp(h)
 	}
