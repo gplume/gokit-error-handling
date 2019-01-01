@@ -31,7 +31,7 @@ func (stringService) Uppercase(s string) (string, error) {
 		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??")
 	}
 	if s == "specific" {
-		return s, errs.New(errs.ErrSpecific)
+		return s, errs.New(errs.ErrSpecific, errs.Low) // errs.Level overrides defined ErrSpecific.Level
 	}
 	if s == "specifics" {
 		_, specErr := strconv.Atoi(s)

@@ -19,7 +19,7 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 			"http.method", ctx.Value(kithttp.ContextKeyRequestMethod),
 			"http.user_agent", ctx.Value(kithttp.ContextKeyRequestUserAgent),
 			"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
-			// following uneeded? why would we want only a part of the url anyway?
+			// following is unneeded? why would we want only a part of the url anyway?
 			// "http.path", ctx.Value(kithttp.ContextKeyRequestPath),
 		}
 		switch err {
@@ -33,7 +33,8 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 				"caller", err.(*Error).Caller,
 				"message", err.(*Error).Message,
 				"error", err.(*Error).Err,
-				"code", fmt.Sprintf("%v", err.(*Error).Code),
+				"code", err.(*Error).Code,
+				"level", err.(*Error).Level,
 			}
 			if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
 				obj = append(obj, "stack", err.Error())

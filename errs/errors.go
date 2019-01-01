@@ -15,6 +15,7 @@ type Error struct {
 	Err     error
 	Message string
 	Code    int
+	Level   Level // from 1 to 10 up to you to decide the priority...
 	Caller  string
 	Stack   *Stack
 }
@@ -40,9 +41,10 @@ func (e *Error) Error() string {
 // note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
 func New(args ...interface{}) error {
 	var (
-		err  error
-		msg  string
-		code int
+		err   error
+		msg   string
+		code  int
+		level Level
 	)
 	for _, v := range args {
 		switch v.(type) {
@@ -65,17 +67,27 @@ func New(args ...interface{}) error {
 				} else {
 					code = http.StatusInternalServerError
 				}
+				if er.Level < 11 {
+					level = er.Level
+				}
 			} else {
 				err = v.(error)
 			}
 		case string:
 			msg = v.(string)
 		case int:
-			code = v.(int)
+			if v.(int) > int(end) {
+				code = v.(int)
+			}
+		case Level:
+			if v.(Level) > 0 && v.(Level) <= Level(end) {
+				level = Level(v.(Level))
+			}
 		}
 	}
 	er := &Error{
 		Code:    code,
+		Level:   level,
 		Message: msg,
 		Err:     err,
 	}
