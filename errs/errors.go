@@ -73,7 +73,7 @@ func New(args ...interface{}) error {
 				} else {
 					code = http.StatusInternalServerError
 				}
-				if er.Level < 11 {
+				if er.Level < Level(end) {
 					level = er.Level
 				}
 			} else {
@@ -97,9 +97,9 @@ func New(args ...interface{}) error {
 		Message: msg,
 		Err:     err,
 	}
-	_, w, ln, ok := runtime.Caller(1)
+	_, file, ln, ok := runtime.Caller(1)
 	if ok {
-		er.Caller = fmt.Sprintf("%s:%d", path.Base(w), ln)
+		er.Caller = fmt.Sprintf("%s:%d", path.Base(file), ln)
 	}
 	er.populateStack()
 	return er

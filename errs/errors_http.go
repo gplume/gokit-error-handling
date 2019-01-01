@@ -66,6 +66,9 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 		if er, itis := err.(*Error); itis && er.Message != "" {
 			msg = er.Message
 		}
+		if msg == "" {
+			msg = ErrInternalServer.Error()
+		}
 		// this should be removed for more granularity:
 		// switch code {
 		// case http.StatusBadRequest:

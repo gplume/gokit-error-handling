@@ -31,11 +31,11 @@ func (stringService) Uppercase(s string) (string, error) {
 		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??")
 	}
 	if s == "specific" {
-		return s, errs.New(errs.ErrSpecific, errs.Low)
+		return s, errs.New(errs.ErrSpecific)
 	}
 	if s == "specifics" {
 		_, specErr := strconv.Atoi(s)
-		return s, errs.New(specErr, errs.ErrInternalServer.Error(), errs.Low, http.StatusBadRequest) // errs.Level overrides defined ErrSpecific.Level
+		return s, errs.New(specErr, errs.ErrSpecific.Message, http.StatusBadRequest, errs.Medium) // errs.Medium overrides defined ErrSpecific.Level
 	}
 	return strings.ToUpper(s), nil
 }
