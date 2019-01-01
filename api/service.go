@@ -31,19 +31,16 @@ func (stringService) Uppercase(s string) (string, error) {
 		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??")
 	}
 	if s == "specific" {
-		return s, errs.New(errs.ErrSpecific, errs.Low) // errs.Level overrides defined ErrSpecific.Level
+		return s, errs.New(errs.ErrSpecific, errs.Low)
 	}
 	if s == "specifics" {
 		_, specErr := strconv.Atoi(s)
-		return s, errs.New(specErr, errs.ErrInternalServer.Error())
+		return s, errs.New(specErr, errs.ErrInternalServer.Error(), errs.Low, http.StatusBadRequest) // errs.Level overrides defined ErrSpecific.Level
 	}
 	return strings.ToUpper(s), nil
 }
 
 // Count ...
 func (stringService) Count(s string) (int, error) {
-	if s == "" {
-		return 0, errs.New("why would want to count some  –e m p t y   s t r i n g– huh!??", http.StatusBadRequest)
-	}
 	return utf8.RuneCountInString(s), nil
 }

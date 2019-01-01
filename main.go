@@ -16,8 +16,8 @@ import (
 )
 
 func main() {
-	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
-	// logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
+	// logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
+	logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
 
 	// SERVICE
 	svc, err := api.NewStringService()

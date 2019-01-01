@@ -10,6 +10,12 @@ import (
 	"strings"
 )
 
+func init() {
+	startLoggingUnderLevel = end
+}
+
+var startLoggingUnderLevel Level
+
 // Error ...
 type Error struct {
 	Err     error
@@ -80,8 +86,8 @@ func New(args ...interface{}) error {
 				code = v.(int)
 			}
 		case Level:
-			if v.(Level) > 0 && v.(Level) <= Level(end) {
-				level = Level(v.(Level))
+			if v.(Level) > Level(Undefined) && v.(Level) <= Level(end) {
+				level = v.(Level)
 			}
 		}
 	}

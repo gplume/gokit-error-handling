@@ -29,22 +29,23 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 		// 	code = http.StatusNotFound
 		case err.(*Error):
 			// fmt.Println("-----from errs.pkg-----")
-			obj := []interface{}{
-				"caller", err.(*Error).Caller,
-				"message", err.(*Error).Message,
-				"error", err.(*Error).Err,
-				"code", err.(*Error).Code,
-				"level", err.(*Error).Level,
+			if err.(*Error).Level < startLoggingUnderLevel {
+				obj := []interface{}{
+					"caller", err.(*Error).Caller,
+					"message", err.(*Error).Message,
+					"error", err.(*Error).Err,
+					"code", err.(*Error).Code,
+					"level", Level(err.(*Error).Level).String(),
+				}
+				if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
+					obj = append(obj, "stack", err.Error())
+				}
+				httperr = append(httperr, obj...)
+				logger.Log(httperr...)
+				if errCode := err.(*Error).Code; errCode > 0 {
+					code = errCode
+				}
 			}
-			if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
-				obj = append(obj, "stack", err.Error())
-			}
-			httperr = append(httperr, obj...)
-			logger.Log(httperr...)
-			if errCode := err.(*Error).Code; errCode > 0 {
-				code = errCode
-			}
-
 		default:
 			// fmt.Println("-----std.errors-----")
 			obj := []interface{}{

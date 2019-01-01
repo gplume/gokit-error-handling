@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gplume/gokit-error-handling/errs"
 )
 
@@ -22,5 +24,8 @@ func (vs serviceValidation) Uppercase(s string) (string, error) {
 }
 
 func (vs serviceValidation) Count(s string) (int, error) {
+	if s == "" {
+		return 0, errs.New("why would want to count some  –e m p t y   s t r i n g– huh!??", http.StatusBadRequest)
+	}
 	return vs.next.Count(s)
 }

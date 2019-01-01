@@ -3,6 +3,7 @@ package errs
 import (
 	"errors"
 	"net/http"
+	"strconv"
 )
 
 // Level of the error
@@ -13,15 +14,32 @@ const (
 	Undefined Level = iota // == 0
 	Critical               // 1...
 	_
+	High // 3
+	_
+	Medium // 5
 	_
 	_
-	Average
 	_
-	_
-	_
-	Low
+	Low // 9
 	end
 )
+
+func (l Level) String() string {
+	switch l {
+	case Undefined:
+		return "Undefined"
+	case Critical:
+		return "Critical"
+	case High:
+		return "High"
+	case Medium:
+		return "Medium"
+	case Low:
+		return "Low"
+	default:
+		return strconv.Itoa(int(l))
+	}
+}
 
 var (
 	// ErrInternalServer ...
