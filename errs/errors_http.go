@@ -11,7 +11,7 @@ import (
 )
 
 // EncodeError ...
-func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
+func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 	return func(ctx context.Context, err error, w http.ResponseWriter) {
 		code := http.StatusInternalServerError
 		httperr := []interface{}{
@@ -19,14 +19,8 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 			"http.method", ctx.Value(kithttp.ContextKeyRequestMethod),
 			"http.user_agent", ctx.Value(kithttp.ContextKeyRequestUserAgent),
 			"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
-			// following is unneeded? why would we want only a part of the url anyway?
-			// "http.path", ctx.Value(kithttp.ContextKeyRequestPath),
 		}
 		switch err {
-		// case ErrInvalidBody:
-		// 	code = http.StatusBadRequest
-		// case sql.ErrNoRows:
-		// 	code = http.StatusNotFound
 		case err.(*Error):
 			// fmt.Println("-----from errs.pkg-----")
 			if err.(*Error).Level < startLoggingUnderLevel {
@@ -37,8 +31,8 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 					"code", err.(*Error).Code,
 					"level", level(err.(*Error).Level).String(),
 				}
-				if (fullStack) || err.(*Error).Caller == "" && err.Error() != "" {
-					obj = append(obj, "stack", err.Error())
+				if printFullstack || (err.(*Error).Caller == "" && err.(*Error).Stack != nil) {
+					obj = append(obj, "stack", err.(*Error).Error())
 				}
 				httperr = append(httperr, obj...)
 				logger.Log(httperr...)
@@ -47,7 +41,7 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 				}
 			}
 		default:
-			// fmt.Println("-----std.errors-----")
+			// fmt.Println("-----std.errors-----") // for backward compatibilty with std error
 			obj := []interface{}{
 				"error", err.Error(),
 				"stack", fmt.Sprintf("%+v", err),
@@ -62,23 +56,17 @@ func EncodeError(logger kitlog.Logger, fullStack bool) kithttp.ErrorEncoder {
 		// defaults the error message content
 		var msg string
 		// if from errs.pkg then retreive Message if not empty
-		// or do some specific standardization message sorting
+		// but we should probably set an option for that here
+		// for displaying std message if wished
 		if er, itis := err.(*Error); itis && er.Message != "" {
 			msg = er.Message
 		}
+		// in case of...
 		if msg == "" {
-			msg = ErrInternalServer.Error()
+			msg = ErrInternalServer.Message
 		}
-		// this should be removed for more granularity:
-		// switch code {
-		// case http.StatusBadRequest:
-		// 	msg = ErrInvalidBody.Error()
-		// case http.StatusInternalServerError:
-		// 	msg = ErrInternalServer.Error()
-		// 	// ...etc
-		// }
 
-		// response
+		// response to the client
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": fmt.Sprintf("%s", msg),
 		})

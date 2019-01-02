@@ -61,7 +61,7 @@ func MakeHTTPHandler(
 ) http.Handler {
 	options := []kithttp.ServerOption{
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
-		kithttp.ServerErrorEncoder(errs.EncodeError(logger, false)),
+		kithttp.ServerErrorEncoder(errs.EncodeError(logger)),
 	}
 
 	uppercaseHandler := middle.Ware(kithttp.NewServer(

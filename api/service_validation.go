@@ -18,7 +18,7 @@ func newValidationService(svc Service) Service {
 
 func (vs serviceValidation) Uppercase(s string) (string, error) {
 	if s == "" {
-		return s, errs.New(errs.ErrEmpty)
+		return s, errs.New(errs.ErrEmptyParam)
 	}
 	return vs.next.Uppercase(s)
 }

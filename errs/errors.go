@@ -4,17 +4,25 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"net/http"
-	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
 
-func init() {
-	startLoggingUnderLevel = end
-}
+var (
+	startLoggingUnderLevel = UserOnly
+	printFullstack         bool
+)
 
-var startLoggingUnderLevel level
+// NewErrs allows to set options at runtime
+func NewErrs(startLoggingUnder level, printFullStack bool) error {
+	if level(startLoggingUnder) > level(End) {
+		return fmt.Errorf("errs package: not allowed threshold limit for log, max is int(%v)", level(End))
+	}
+	startLoggingUnderLevel = level(startLoggingUnder)
+	printFullstack = printFullStack
+	return nil
+}
 
 // Error ...
 type Error struct {
@@ -56,8 +64,6 @@ func New(args ...interface{}) error {
 		switch v.(type) {
 		case error:
 			if er, ok := v.(*Error); ok {
-				// it, _ := json.MarshalIndent(&er, "", "\t")
-				// fmt.Printf("%s", it)
 				if er.Err != nil {
 					err = er.Err
 				} else {
@@ -66,14 +72,14 @@ func New(args ...interface{}) error {
 				if er.Message != "" {
 					msg = er.Message
 				} else {
-					msg = "undefined error message"
+					msg = ErrInternalServer.Message
 				}
 				if er.Code > 0 {
 					code = er.Code
 				} else {
-					code = http.StatusInternalServerError
+					code = ErrInternalServer.Code
 				}
-				if er.Level < level(end) {
+				if er.Level < level(End) {
 					lvl = er.Level
 				}
 			} else {
@@ -82,11 +88,11 @@ func New(args ...interface{}) error {
 		case string:
 			msg = v.(string)
 		case int:
-			if v.(int) > int(end) {
+			if v.(int) > int(End) {
 				code = v.(int)
 			}
 		case level:
-			if v.(level) >= level(Undefined) && v.(level) <= level(end) {
+			if v.(level) <= level(End) {
 				lvl = v.(level)
 			}
 		}
@@ -99,10 +105,11 @@ func New(args ...interface{}) error {
 	}
 	_, file, ln, ok := runtime.Caller(1)
 	if ok {
-		er.Caller = fmt.Sprintf("%s:%d", path.Base(file), ln)
-	} else {
+		er.Caller = fmt.Sprintf("%s:%d", filepath.ToSlash(file), ln) // or path.Base(file) for filename only
+		// ToSlash is a special dedicace to a certain Windows Powershell user ;)
+	}
+	if printFullstack || !ok { // will override printFullstack because it's needed!
 		er.populateStack()
-		er.Caller = er.Error()
 	}
 	return er
 }
@@ -118,7 +125,7 @@ func (e *Error) populateStack() {
 	e.Stack = &Stack{Callers: callers()}
 }
 
-const separator = ":\r\n\t"
+const separator = ":\n\t"
 
 // printStack formats and prints the stack for this Error to the given buffer.
 // It should be called from the Error's Error method.
