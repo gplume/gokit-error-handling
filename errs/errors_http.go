@@ -23,20 +23,20 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 		switch err {
 		case err.(*Error):
 			// fmt.Println("-----from errs.pkg-----")
-			if err.(*Error).Level < startLoggingUnderLevel {
+			if e, ok := err.(*Error); ok && err.(*Error).Level < startLoggingUnderLevel {
 				obj := []interface{}{
-					"caller", err.(*Error).Caller,
-					"message", err.(*Error).Message,
-					"error", err.(*Error).Err,
-					"code", err.(*Error).Code,
-					"level", level(err.(*Error).Level).String(),
+					"caller", e.Caller,
+					"message", e.Message,
+					"error", e.Err,
+					"code", e.Code,
+					"level", level(e.Level).String(),
 				}
-				if printFullstack || (err.(*Error).Caller == "" && err.(*Error).Stack != nil) {
-					obj = append(obj, "stack", err.(*Error).Error())
+				if printFullstack || (e.Caller == "" && e.Stack != nil) {
+					obj = append(obj, "stack", e.Error())
 				}
 				httperr = append(httperr, obj...)
 				logger.Log(httperr...)
-				if errCode := err.(*Error).Code; errCode > 0 {
+				if errCode := e.Code; errCode > 0 {
 					code = errCode
 				}
 			}

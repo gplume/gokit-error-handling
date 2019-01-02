@@ -2,7 +2,6 @@ package errs
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"path/filepath"
 	"runtime"
@@ -15,12 +14,12 @@ var (
 )
 
 // NewErrs allows to set options at runtime
-func NewErrs(startLoggingUnder level, printFullStack bool) error {
+func NewErrs(startLoggingUnder level, alwaysFullStack bool) error {
 	if level(startLoggingUnder) > level(End) {
 		return fmt.Errorf("errs package: not allowed threshold limit for log, max is int(%v)", level(End))
 	}
 	startLoggingUnderLevel = level(startLoggingUnder)
-	printFullstack = printFullStack
+	printFullstack = alwaysFullStack
 	return nil
 }
 
@@ -66,18 +65,12 @@ func New(args ...interface{}) error {
 			if er, ok := v.(*Error); ok {
 				if er.Err != nil {
 					err = er.Err
-				} else {
-					err = errors.New("undefined error")
 				}
 				if er.Message != "" {
 					msg = er.Message
-				} else {
-					msg = ErrInternalServer.Message
 				}
 				if er.Code > 0 {
 					code = er.Code
-				} else {
-					code = ErrInternalServer.Code
 				}
 				if er.Level < level(End) {
 					lvl = er.Level
@@ -103,6 +96,15 @@ func New(args ...interface{}) error {
 		Message: msg,
 		Err:     err,
 	}
+	// set defaults to 500 if empty
+	switch {
+	case er.Code == 0:
+		er.Code = ErrInternalServer.Code
+		fallthrough
+	case er.Message == "":
+		er.Message = ErrInternalServer.Message
+	}
+	// THE Caller!
 	_, file, ln, ok := runtime.Caller(1)
 	if ok {
 		er.Caller = fmt.Sprintf("%s:%d", filepath.ToSlash(file), ln) // or path.Base(file) for filename only

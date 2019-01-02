@@ -70,12 +70,10 @@ func main() {
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(5*time.Second))
 	defer cancel()
-	// Doesn't block if no connections, but will otherwise wait
-	// until the timeout deadline.
-	srv.Shutdown(ctx)
-	// Optionally, you could run srv.Shutdown in a goroutine and block on
-	// <-ctx.Done() if your application should wait for other services
-	// to finalize based on context cancellation.
+	go func() {
+		srv.Shutdown(ctx)
+	}()
+	<-ctx.Done() // if your application should wait for other services
 	logger.Log("shutting down", ctx)
 	os.Exit(0)
 }

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/pkg/errors"
+
 	"github.com/gplume/gokit-error-handling/errs"
 )
 
@@ -31,9 +33,13 @@ func (stringService) Uppercase(s string) (string, error) {
 	if s == "empty" {
 		return s, errs.New(errs.ErrEmptyParam)
 	}
-	if s == "specifics" {
+	if s == "compositing" {
 		_, specErr := strconv.Atoi(s)
-		return s, errs.New(specErr, errs.ErrInvalidParameter.Message, http.StatusBadRequest, errs.High) // errs.Medium overrides defined ErrEmptyParam.Level
+		return s, errs.New(specErr, errs.ErrInvalidParameter.Message, http.StatusNotAcceptable, errs.High) // errs.High overrides defined ErrEmptyParam.Level
+	}
+	if s == "default" {
+		_, err := strconv.Atoi(s)
+		return s, errors.WithStack(err)
 	}
 	return strings.ToUpper(s), nil
 }
