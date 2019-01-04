@@ -50,9 +50,14 @@ func (e *Error) Error() string {
 	return b.String()
 }
 
-// New intanciates the error on place so we have the precise 'human-coded' caller
+// New instanciates the error on place so we have the precise 'human-coded' caller
 // note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
 func New(args ...interface{}) error {
+	return NewFull(false, args...)
+}
+
+// NewFull is the base function
+func NewFull(fullStack bool, args ...interface{}) error {
 	var (
 		err  error
 		msg  string
@@ -110,7 +115,7 @@ func New(args ...interface{}) error {
 		er.Caller = fmt.Sprintf("%s:%d", filepath.ToSlash(file), ln) // or path.Base(file) for filename only
 		// ToSlash is a special dedicace to a certain Windows Powershell user ;)
 	}
-	if printFullstack || !ok { // will override printFullstack because it's needed!
+	if printFullstack || fullStack || !ok { // will override printFullstack because it's needed!
 		er.populateStack()
 	}
 	return er
