@@ -41,6 +41,10 @@ func (stringService) Uppercase(s string) (string, error) {
 		_, err := strconv.Atoi(s)
 		return s, errors.WithStack(err)
 	}
+	if s == "needs" {
+		_, err := strconv.Atoi(s)
+		return s, errs.New(err)
+	}
 	return strings.ToUpper(s), nil
 }
 

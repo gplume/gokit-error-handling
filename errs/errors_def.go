@@ -49,7 +49,7 @@ func (l level) String() string {
 var (
 	// ErrInternalServer the basic 500 throw it all error...
 	ErrInternalServer = &Error{
-		Message: ("an internal server error occurred please contact the server's administrator"),
+		Message: "an internal server error occurred please contact the server's administrator",
 		Code:    http.StatusInternalServerError,
 		Level:   Critical,
 	}
@@ -67,6 +67,7 @@ var (
 		Code:    http.StatusBadRequest,
 		Level:   UserOnly,
 	}
+
 	// ErrEmpty is returned when an input string is empty.
 	ErrEmptyParam = &Error{
 		Message: "empty parameter",

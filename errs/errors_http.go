@@ -31,7 +31,7 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 					"code", e.Code,
 					"level", level(e.Level).String(),
 				}
-				if printFullstack || (e.Caller == "" && e.Stack != nil) {
+				if e.Stack != nil {
 					obj = append(obj, "stack", e.Error())
 				}
 				httperr = append(httperr, obj...)

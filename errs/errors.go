@@ -10,7 +10,7 @@ import (
 
 var (
 	startLoggingUnderLevel = UserOnly
-	printFullstack         bool
+	alwaysPrintFullstack   bool
 )
 
 // NewErrs allows to set options at runtime
@@ -19,7 +19,7 @@ func NewErrs(startLoggingUnder level, alwaysFullStack bool) error {
 		return fmt.Errorf("errs package: not allowed threshold limit for log, max is int(%v)", level(End))
 	}
 	startLoggingUnderLevel = level(startLoggingUnder)
-	printFullstack = alwaysFullStack
+	alwaysPrintFullstack = alwaysFullStack
 	return nil
 }
 
@@ -38,26 +38,9 @@ type Error struct {
 // of std library awaited by your usual code or libraries like go-kit...
 var _ error = &Error{}
 
-// *Error implements the error interface.
-func (e *Error) Error() string {
-	b := new(bytes.Buffer)
-	e.printStack(b)
-	pad(b, ": ")
-	b.WriteString(e.Message)
-	if b.Len() == 0 {
-		return "no error"
-	}
-	return b.String()
-}
-
 // New instanciates the error on place so we have the precise 'human-coded' caller
 // note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
 func New(args ...interface{}) error {
-	return NewFull(false, args...)
-}
-
-// NewFull is the base function
-func NewFull(fullStack bool, args ...interface{}) error {
 	var (
 		err  error
 		msg  string
@@ -115,7 +98,7 @@ func NewFull(fullStack bool, args ...interface{}) error {
 		er.Caller = fmt.Sprintf("%s:%d", filepath.ToSlash(file), ln) // or path.Base(file) for filename only
 		// ToSlash is a special dedicace to a certain Windows Powershell user ;)
 	}
-	if printFullstack || fullStack || !ok { // will override printFullstack because it's needed!
+	if alwaysPrintFullstack || !ok { // will override printFullstack because it's needed!
 		er.populateStack()
 	}
 	return er
@@ -124,6 +107,18 @@ func NewFull(fullStack bool, args ...interface{}) error {
 // Stack ...
 type Stack struct {
 	Callers []uintptr
+}
+
+// *Error implements the error interface.
+func (e *Error) Error() string {
+	b := new(bytes.Buffer)
+	e.printStack(b)
+	pad(b, ": ")
+	b.WriteString(e.Message)
+	if b.Len() == 0 {
+		return "no error"
+	}
+	return b.String()
 }
 
 // populateStack uses the runtime to populate the Error's stack struct with
