@@ -71,6 +71,7 @@ func MakeHTTPHandler(
 		options...,
 	),
 		middle.Notify(),
+		middle.Metrics(componentName, "uppercase-handler"),
 		// ...
 	)
 
@@ -81,6 +82,7 @@ func MakeHTTPHandler(
 		options...,
 	),
 		middle.Notify(),
+		middle.Metrics(componentName, "count-handler"),
 	)
 
 	/*************** Bone Muxer *****************/
