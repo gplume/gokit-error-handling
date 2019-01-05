@@ -29,13 +29,13 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 					"message", e.Message,
 					"error", e.Err,
 					"code", e.Code,
-					"level", level(e.Level).String(),
+					"level", e.Level.String(),
 				}
 				if e.Stack != nil {
 					obj = append(obj, "stack", e.Error())
 				}
-				httperr = append(httperr, obj...)
-				logger.Log(httperr...)
+				obj = append(obj, httperr...)
+				logger.Log(obj...)
 				if errCode := e.Code; errCode > 0 {
 					code = errCode
 				}
@@ -46,8 +46,8 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 				"error", err.Error(),
 				"stack", fmt.Sprintf("%+v", err),
 			}
-			httperr = append(httperr, obj...)
-			logger.Log(httperr...)
+			obj = append(obj, httperr...)
+			logger.Log(obj...)
 		}
 
 		// Now we print to the client:
