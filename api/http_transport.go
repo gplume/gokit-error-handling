@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	componentName = "errors-handling"
+	componentName = "gokit-error-handling"
 )
 
 func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
@@ -72,7 +72,6 @@ func MakeHTTPHandler(
 	),
 		middle.Notify(),
 		middle.Metrics(componentName, "uppercase-handler"),
-		// ...
 	)
 
 	countHandler := middle.Ware(kithttp.NewServer(
@@ -89,5 +88,6 @@ func MakeHTTPHandler(
 	router := bone.New()
 	router.Post("/uppercase", uppercaseHandler)
 	router.Post("/count", countHandler)
+
 	return router
 }

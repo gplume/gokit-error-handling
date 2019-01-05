@@ -12,13 +12,14 @@ import (
 	"github.com/gplume/gokit-error-handling/api"
 	"github.com/gplume/gokit-error-handling/errs"
 	"github.com/gplume/gokit-error-handling/middle"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	kitlog "github.com/go-kit/kit/log"
 )
 
 func main() {
-	// logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
-	logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
+	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
+	// logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
 
 	if err := errs.SetDefaults(errs.End, false); err != nil {
 		logger.Log("init_error", err)
@@ -38,7 +39,6 @@ func main() {
 		Count:     api.MakeCountEndpoint(svc),
 	}
 
-	// TRANSPORT
 	r := api.MakeHTTPHandler(
 		e,
 		logger,
@@ -58,6 +58,15 @@ func main() {
 		if err := srv.ListenAndServe(); err != nil {
 			log.Fatal(err)
 		}
+	}()
+
+	// Debug
+	go func() {
+		debugAddr := ":8081"
+		// mux := http.NewServeMux()
+		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
+		http.Handle("/metrics", promhttp.Handler())
+		panic(http.ListenAndServe(debugAddr, nil))
 	}()
 
 	c := make(chan os.Signal, 1)
