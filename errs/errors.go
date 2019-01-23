@@ -13,8 +13,8 @@ var (
 	alwaysPrintFullstack   bool
 )
 
-// SetDefaults allows to set options at runtime
-func SetDefaults(startLoggingUnder level, alwaysFullStack bool) error {
+// NewDefaults allows to set options at runtime
+func NewDefaults(startLoggingUnder level, alwaysFullStack bool) error {
 	if level(startLoggingUnder) > level(End) {
 		return fmt.Errorf("errs package: not allowed threshold limit for log, max is int(%v)", level(End))
 	}

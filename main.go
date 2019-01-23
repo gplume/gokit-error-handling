@@ -21,7 +21,7 @@ func main() {
 	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
 	// logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
 
-	if err := errs.SetDefaults(errs.End, false); err != nil {
+	if err := errs.NewDefaults(errs.End, false); err != nil {
 		logger.Log("init_error", err)
 		os.Exit(1)
 	}
