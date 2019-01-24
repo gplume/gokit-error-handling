@@ -54,6 +54,12 @@ var (
 		Level:   Critical,
 	}
 
+	ErrNotFound = &Error{
+		Message: "not found",
+		Code:    http.StatusNotFound,
+		Level:   Medium,
+	}
+
 	// ErrInvalidBody is used when the payload is wrong
 	ErrInvalidBody = &Error{
 		Message: "invalid body",

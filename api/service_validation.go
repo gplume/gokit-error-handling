@@ -16,16 +16,16 @@ func newValidationService(svc Service) Service {
 	}
 }
 
-func (vs serviceValidation) Uppercase(s string) (string, error) {
+func (sv serviceValidation) Uppercase(s string) (string, error) {
 	if s == "" {
 		return s, errs.New(errs.ErrEmptyParam)
 	}
-	return vs.next.Uppercase(s)
+	return sv.next.Uppercase(s)
 }
 
-func (vs serviceValidation) Count(s string) (int, error) {
+func (sv serviceValidation) Count(s string) (int, error) {
 	if s == "" {
 		return 0, errs.New("why would want to count some  –e m p t y   s t r i n g– huh!??", http.StatusBadRequest)
 	}
-	return vs.next.Count(s)
+	return sv.next.Count(s)
 }
