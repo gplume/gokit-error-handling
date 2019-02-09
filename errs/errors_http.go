@@ -21,9 +21,9 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 			"http.proto", ctx.Value(kithttp.ContextKeyRequestProto),
 		}
 		switch err {
-		case err.(*Error):
+		case err.(*Err):
 			// fmt.Println("-----from errs.pkg-----")
-			if e, ok := err.(*Error); ok && err.(*Error).Level < startLoggingUnderLevel {
+			if e, ok := err.(*Err); ok && err.(*Err).Level < startLoggingUnderLevel {
 				obj := []interface{}{
 					"caller", e.Caller,
 					"message", e.Message,
@@ -58,7 +58,7 @@ func EncodeError(logger kitlog.Logger) kithttp.ErrorEncoder {
 		// if from errs.pkg then retreive Message if not empty
 		// but we should probably set an option for that here
 		// for displaying std message if wished
-		if er, itis := err.(*Error); itis && er.Message != "" {
+		if er, itis := err.(*Err); itis && er.Message != "" {
 			msg = er.Message
 		}
 		// in case of...

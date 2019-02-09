@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	startLoggingUnderLevel = UserOnly
+	startLoggingUnderLevel = Info
 	alwaysPrintFullstack   bool
 )
 
@@ -23,8 +23,8 @@ func NewDefaults(startLoggingUnder level, alwaysFullStack bool) error {
 	return nil
 }
 
-// Error ...
-type Error struct {
+// Err ...
+type Err struct {
 	Err     error
 	Message string
 	Code    int
@@ -36,7 +36,7 @@ type Error struct {
 // assert Error implements the error interface.
 // this way you can pass *Error type to the normal 'error'
 // of std library awaited by your usual code or libraries like go-kit...
-var _ error = &Error{}
+var _ error = &Err{}
 
 // New instanciates the error on place so we have the precise 'human-coded' caller
 // note that now *Error pass through as an std 'error' type because of var _ error = &Error{}
@@ -50,7 +50,7 @@ func New(args ...interface{}) error {
 	for _, v := range args {
 		switch v.(type) {
 		case error:
-			if er, ok := v.(*Error); ok {
+			if er, ok := v.(*Err); ok {
 				if er.Err != nil {
 					err = er.Err
 				}
@@ -78,7 +78,7 @@ func New(args ...interface{}) error {
 			}
 		}
 	}
-	er := &Error{
+	er := &Err{
 		Code:    code,
 		Level:   lvl,
 		Message: msg,
@@ -110,7 +110,7 @@ type Stack struct {
 }
 
 // *Error implements the error interface.
-func (e *Error) Error() string {
+func (e *Err) Error() string {
 	b := new(bytes.Buffer)
 	e.printStack(b)
 	pad(b, ": ")
@@ -123,7 +123,7 @@ func (e *Error) Error() string {
 
 // populateStack uses the runtime to populate the Error's stack struct with
 // information about the current stack.
-func (e *Error) populateStack() {
+func (e *Err) populateStack() {
 	e.Stack = &Stack{Callers: callers()}
 }
 
@@ -131,7 +131,7 @@ const separator = ":\n\t"
 
 // printStack formats and prints the stack for this Error to the given buffer.
 // It should be called from the Error's Error method.
-func (e *Error) printStack(b *bytes.Buffer) {
+func (e *Err) printStack(b *bytes.Buffer) {
 	if e.Stack == nil {
 		return
 	}

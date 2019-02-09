@@ -28,14 +28,14 @@ func NewStringService() (Service, error) {
 // Uppercase ...
 func (stringService) Uppercase(s string) (string, error) {
 	if _, err := strconv.Atoi(s); err == nil {
-		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??", errs.UserOnly)
+		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??", errs.Info)
 	}
 	if s == "empty" {
 		return s, errs.New(errs.ErrEmptyParam)
 	}
 	if s == "compositing" {
 		_, specErr := strconv.Atoi(s)
-		return s, errs.New(specErr, errs.ErrInvalidParameter.Message, http.StatusNotAcceptable, errs.High) // errs.High overrides defined ErrEmptyParam.Level
+		return s, errs.New(specErr, errs.ErrInvalidParameter.Message, http.StatusNotAcceptable, errs.Error) // errs.Error overrides defined ErrEmptyParam.Level
 	}
 	if s == "default" {
 		_, err := strconv.Atoi(s)

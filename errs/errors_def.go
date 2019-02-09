@@ -12,11 +12,12 @@ type level int
 // Error level definition
 const (
 	Undefined level = iota // == 0
-	Critical
-	High
-	Medium
-	Low
-	UserOnly
+	Fatal
+	Error
+	Warn
+	Info
+	Debug
+	Trace
 	End
 )
 
@@ -36,16 +37,18 @@ func (l level) String() string {
 	switch l {
 	case Undefined:
 		return "Undefined"
-	case Critical:
-		return "Critical"
-	case High:
-		return "High"
-	case Medium:
-		return "Medium"
-	case UserOnly:
-		return "UserOnly"
-	case Low:
-		return "Low"
+	case Fatal:
+		return "Fatal"
+	case Error:
+		return "Error"
+	case Warn:
+		return "Warn"
+	case Info:
+		return "Info"
+	case Debug:
+		return "Debug"
+	case Trace:
+		return "Trace"
 	default:
 		return strconv.Itoa(int(l))
 	}
@@ -58,37 +61,37 @@ func (l level) String() string {
 // Stack:
 var (
 	// ErrInternalServer the basic 500 throw it all error...
-	ErrInternalServer = &Error{
+	ErrInternalServer = &Err{
 		Message: "an internal server error occurred please contact the server's administrator",
 		Code:    http.StatusInternalServerError,
-		Level:   Critical,
+		Level:   Error,
 	}
 
-	ErrNotFound = &Error{
+	ErrNotFound = &Err{
 		Message: "not found",
 		Code:    http.StatusNotFound,
-		Level:   Medium,
+		Level:   Info,
 	}
 
 	// ErrInvalidBody is used when the payload is wrong
-	ErrInvalidBody = &Error{
+	ErrInvalidBody = &Err{
 		Message: "invalid body",
 		Code:    http.StatusBadRequest,
-		Level:   UserOnly,
+		Level:   Info,
 	}
 
 	// ErrInvalidParameter throwed when a query required parameter is missing or wrong
-	ErrInvalidParameter = &Error{
+	ErrInvalidParameter = &Err{
 		Message: "invalid parameter",
 		Code:    http.StatusBadRequest,
-		Level:   UserOnly,
+		Level:   Info,
 	}
 
 	// ErrEmpty is returned when an input string is empty.
-	ErrEmptyParam = &Error{
+	ErrEmptyParam = &Err{
 		Message: "empty parameter",
 		Code:    http.StatusBadRequest,
 		Err:     errors.New("empty parameter"),
-		Level:   UserOnly,
+		Level:   Info,
 	}
 )
