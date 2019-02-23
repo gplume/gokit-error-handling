@@ -9,7 +9,7 @@ Advantages:
 - Unclutter your Sumologic logs and allows better error tracking
 - Define logging activation by error Level
 - Has an `error` compliant type
-- Structure `*Err` type that facilits unit testing error checking even for customs one.
+- Structured `*Err` type that ease unit testing error checking even for customs one.
 
 Let's asume an uppersace string service with this content check for example purpose:
 ```
