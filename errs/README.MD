@@ -62,7 +62,7 @@ var (
 )
 ```
 
-so a simple straightforward usage would be:
+so a simple straightforward usage out of the box would be:
 ```
 return errs.New(errs.ErrEmptyParam)
 ```
