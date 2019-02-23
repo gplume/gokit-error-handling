@@ -127,7 +127,7 @@ var (
     ErrCustomInvalidParam = &errs.Err{
         Message: "invalid parameter",
         Code:    http.StatusBadRequest,
-        Level:   Info,
+        Level:   errs.Info,
     }
 )
 
