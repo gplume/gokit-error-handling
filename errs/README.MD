@@ -115,7 +115,7 @@ type Err struct {
 }
 ```
 
-The `*errs.Err` type has the ability to pass the standard library `error` type by the trick of this line (that you don't need to declare, it's already there in the package): 
+The `*errs.Err` type has the ability to pass the standard library `error` type by the trick of this line: 
 ```
 var _ error = &Err{}
 ```
@@ -148,7 +148,7 @@ You can compose your own specific error at runtime like this:
 reutrn errs.New(err, "string message displayed to client", http.StatusNotAcceptable, errs.Error)
 
 ```
-Orders don't matters because of variadics. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can finc in the `errors_def.go` file.
+Orders don't matters because of variadics. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can find in the `errors_def.go` file.
 
 
 ## Still need the full stack?
