@@ -4,11 +4,21 @@ Errors are suposed to makes us better right? Well let's try to make make errors 
 
 This package is primarily a go-kit errors package that allows you to either define error content and message, level at runtime or use your own predefined custom errors. The caller field will display accurately the real error caller inside your application. Finally no more needs for the `golang.org/pkg/errors`
 
-Let's asume an uppersace string service with this content check for exemple purpose:
+Advantages:
+- Always provide real error caller and allow to click this info in IDE
+- Unclutter your Sumologic logs and allows better error tracking
+- Define logging activation by error Level
+- Has an `error` compliant type
+- Structure `*Err` type that facilits unit testing error checking even for customs one.
+
+Let's asume an uppersace string service with this content check for example purpose:
 ```
-	if _, err := strconv.Atoi(s); err != nil {
+func (stringService) Uppercase(s string) (string, error) {
+	if _, err := strconv.Atoi(s); err == nil {
 		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??", errs.Info)
 	}
+    return strings.ToUpper(s), nil
+}
 ```
 The `errs.New()` function has a variadic input parameter where you can put an `error` type, `string` message, `int` for level (0-7) and an http.Status code to return.
 
