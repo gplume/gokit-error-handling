@@ -98,7 +98,9 @@ func New(args ...interface{}) error {
 		er.Caller = fmt.Sprintf("%s:%d", filepath.ToSlash(file), ln) // or path.Base(file) for filename only
 		// ToSlash is a special dedicace to a certain Windows Powershell user ;)
 	}
-	if alwaysPrintFullstack || !ok { // will override printFullstack because it's needed!
+	// will override printFullstack because it's needed!
+	// apparently er.Caller is empty
+	if alwaysPrintFullstack || !ok {
 		er.populateStack()
 	}
 	return er
