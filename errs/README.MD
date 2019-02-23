@@ -1,4 +1,4 @@
-## [errs] Yet Another Golang Error Package... (YAGERP?)
+## [errs] Yet Another Golang Error Package... (YAGEP?)
 
 Errors are suposed to makes us better right? Well let's try to make make errors better then...
 
