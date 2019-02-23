@@ -148,7 +148,14 @@ You can compose your own specific error at runtime like this:
 reutrn errs.New(err, "string message displayed to client", http.StatusNotAcceptable, errs.Error)
 
 ```
-Orders don't matters because of variadics. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can find in the `errors_def.go` file.
+or:
+
+```
+reutrn errs.New(err, errs.ErrEmptyParam, errs.Error) // here only the Level is overridden
+
+```
+Do whatever feels intuitive to you it will work!
+Orders don't matters because of variadic. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can find in the `errors_def.go` file.
 
 
 ## Still need the full stack?
