@@ -152,7 +152,7 @@ Orders don't matters because of variadics. If you don't throw an http.Status cod
 
 
 ## Still need the full stack?
-You can! and we even made it better that `golang.org/pkg/errors` by reverting the stack so the last line presents the actual needed caller with the addition of the Service name. Here's an example with the same error as above:
+You can! and we even made it better that `golang.org/pkg/errors` by reverting the stack so the last line presents the actual needed caller with the addition of the Service name. Here's an example with the same error as above (but please don't use that in production :)
 
 ```
 {
@@ -165,6 +165,20 @@ You can! and we even made it better that `golang.org/pkg/errors` by reverting th
     "http.user_agent":"PostmanRuntime/7.6.0",
     "level":"Info",
     "message":"empty parameter",
-    "stack":"/usr/local/go/src/runtime/asm_amd64.s:1333: runtime.goexit:\n\t/usr/local/go/src/net/http/server.go:1847: net/http.(*conn).serve:\n\t/usr/local/go/src/net/http/server.go:2741: ...serverHandler.ServeHTTP:\n\t/usr/local/go/src/net/http/server.go:1964: ...HandlerFunc.ServeHTTP:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/middle/recover.go:31: github.com/gplume/gokit-error-handling/middle.RecoverFromPanic.func1:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/bone.go:43: ...vendor/github.com/go-zoo/bone.(*Mux).ServeHTTP:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/helper.go:18: ...parse:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/route.go:148: ...(*Route).parse:\n\t/usr/local/go/src/net/http/server.go:1964: net/http.HandlerFunc.ServeHTTP:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/middle/http_instrumenting.go:67: github.com/gplume/gokit-error-handling/middle.Metrics.func1.1:\n\t/usr/local/go/src/net/http/server.go:1964: net/http.HandlerFunc.ServeHTTP:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/middle/notify.go:17: github.com/gplume/gokit-error-handling/middle.Notify.func1.1:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-kit/kit/transport/http/server.go:110: ...vendor/github.com/go-kit/kit/transport/http.Server.ServeHTTP:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/api/endpoints.go:19: ...api.MakeUppercaseEndpoint.func1:\n\t/home/gp/go/src/github.com/gplume/gokit-error-handling/api/service_validation.go:21: ...serviceValidation.Uppercase: empty parameter"
+    "stack":"/usr/local/go/src/runtime/asm_amd64.s:1333: runtime.goexit:\n
+    /usr/local/go/src/net/http/server.go:1847: net/http.(*conn).serve:\n
+    /usr/local/go/src/net/http/server.go:2741: ...serverHandler.ServeHTTP:\n
+    /usr/local/go/src/net/http/server.go:1964: ...HandlerFunc.ServeHTTP:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/middle/recover.go:31: github.com/gplume/gokit-error-handling/middle.RecoverFromPanic.func1:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/bone.go:43: ...vendor/github.com/go-zoo/bone.(*Mux).ServeHTTP:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/helper.go:18: ...parse:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-zoo/bone/route.go:148: ...(*Route).parse:\n
+    /usr/local/go/src/net/http/server.go:1964: net/http.HandlerFunc.ServeHTTP:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/middle/http_instrumenting.go:67: github.com/gplume/gokit-error-handling/middle.Metrics.func1.1:\n
+    /usr/local/go/src/net/http/server.go:1964: net/http.HandlerFunc.ServeHTTP:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/middle/notify.go:17: github.com/gplume/gokit-error-handling/middle.Notify.func1.1:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/vendor/github.com/go-kit/kit/transport/http/server.go:110: ...vendor/github.com/go-kit/kit/transport/http.Server.ServeHTTP:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/api/endpoints.go:19: ...api.MakeUppercaseEndpoint.func1:\n
+    /home/gp/go/src/github.com/gplume/gokit-error-handling/api/service_validation.go:21: ...serviceValidation.Uppercase: empty parameter"
 }
 ```
