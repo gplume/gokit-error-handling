@@ -28,7 +28,7 @@ type Err struct {
 	Err     error
 	Message string
 	Code    int
-	Level   level // from 1 to 10 up to you to decide the priority...
+	Level   level // from 1 to 7
 	Caller  string
 	Stack   *Stack
 }

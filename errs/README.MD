@@ -2,17 +2,17 @@
 
 Errors are suposed to makes us better right? Well let's try to make make errors better then...
 
-This package is primarily a go-kit errors package that allows you to either define error content and message, level at runtime or use your own custon error for unit testing consistency.
+This package is primarily a go-kit errors package that allows you to either define error content and message, level at runtime or use your own predefined custom errors. The caller field will display accurately the real error caller inside your application. Finally no more needs for the `golang.org/pkg/errors`
 
 Let's asume an uppersace string service with this content check for exemple purpose:
 ```
-	if _, err := strconv.Atoi(s); err == nil {
+	if _, err := strconv.Atoi(s); err != nil {
 		return s, errs.New(http.StatusBadRequest, "uppercase some numbers dude, really??", errs.Info)
 	}
 ```
 The `errs.New()` function has a variadic input parameter where you can put an `error` type, `string` message, `int` for level (0-7) and an http.Status code to return.
 
-You can define you error error like this and these are alredy ready for use inside `errs` package for your convenience (and please PR are accepted to include more of them) but they can be defined anywhere and customised as you wish:
+You can define you error error like this and these are already ready for use inside `errs` package for your convenience (and please PR are accepted to include more of them) but they can be defined anywhere and customised as you wish:
 ```
 var (
 	// ErrInternalServer the basic 500 throw it all error...
@@ -80,6 +80,7 @@ would log this:
 
 `level` is parametrable at api startup and is defaulted to only log under the Info level.
 
+
 ## Standard Error level:
 | Standard | intLevel |
 |----------|----------|
@@ -93,6 +94,17 @@ would log this:
 
 
 ## Errs type
+```
+type Err struct {
+	Err     error
+	Message string
+	Code    int
+	Level   level // from 1 to 7
+	Caller  string
+	Stack   *Stack
+}
+```
+
 The `*errs.Err` type has the ability to pass the standard library `error` type by the trick of this line (that you don't need to declare, it's already there in the package): 
 ```
 var _ error = &Err{}
@@ -115,14 +127,19 @@ func doSomeService(() error {
 
 ```
 ...works !
-That very helpful to use `errs` in existing codebase and `go-kit` that force you to use those `Endpoint` `error` type...
+That is very helpful to incorporate `errs` package in existing codebase and also `go-kit` that force you to use those `Endpoint` `error` type...
+
 
 ## Compositing
 
 You can compose your own specific error at runtime like this:
 
 ```
-reutrn errs.New(err, "string message displayed to client", http.StatusNotAcceptable, errs.Error) 
+reutrn errs.New(err, "string message displayed to client", http.StatusNotAcceptable, errs.Error)
+
 ```
+Orders don't matters because of variadics. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can finc in the `errors_def.go` file.
+
+
 
 
