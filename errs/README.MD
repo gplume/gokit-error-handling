@@ -151,11 +151,13 @@ reutrn errs.New(err, "string message displayed to client", http.StatusNotAccepta
 or:
 
 ```
-reutrn errs.New(err, errs.ErrEmptyParam, errs.Error) // here only the Level is overridden
+return errs.New(err, errs.ErrEmptyParam, errs.Error) // here only the Level is overridden
 
 ```
+So you can use a defined error and override some of its value if you put it alongside. Above the Error Level is overriden from `errs.Info` to `errs.Error`.
 Do whatever feels intuitive to you it will work!
 Orders don't matters because of variadic. If you don't throw an http.Status code or message, these will be defaulted to the common error 500 code and message that you can find in the `errors_def.go` file.
+Note that you are not forced to input somme `err` in `errs.New()`then in le log message the error will simply be nil.
 
 
 ## Still need the full stack?
