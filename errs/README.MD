@@ -2,7 +2,7 @@
 
 Errors are suposed to makes us better right? Well let's try to make make errors better then...
 
-This package is primarily a go-kit errors package that allows you to either define error content and message, level at runtime or use your own predefined custom errors. The caller field will display accurately the real error caller inside your application. Finally no more needs for the `golang.org/pkg/errors`
+This package is primarily a go-kit errors package that allows you to either define error content and message, level at runtime or use your own predefined custom errors. The caller field will display accurately the real error caller inside your application. Finally no more needs for the `github.com/pkg/errors`
 
 Advantages:
 - Always provide real error caller and allow to click this info in IDE
@@ -159,7 +159,7 @@ Orders don't matters because of variadic. If you don't throw an http.Status code
 
 
 ## Still need the full stack?
-You can! and we even made it better that `golang.org/pkg/errors` by reverting the stack so the last line presents the actual needed caller with the addition of the Service name. Here's an example with the same error as above (but please don't use that in production :)
+You can! and we even made it better that `github.com/pkg/errors` by reverting the stack so the last line presents the actual needed caller with the addition of the Service name. Here's an example with the same error as above (but please don't use that in production :)
 
 ```
 {
