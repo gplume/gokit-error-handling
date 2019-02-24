@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-zoo/bone"
-	"github.com/gplume/gokit-error-handling/errs"
+	"github.com/gplume/errs"
 	"github.com/gplume/gokit-error-handling/middle"
 
 	kitlog "github.com/go-kit/kit/log"

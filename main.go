@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gplume/errs"
 	"github.com/gplume/gokit-error-handling/api"
-	"github.com/gplume/gokit-error-handling/errs"
 	"github.com/gplume/gokit-error-handling/middle"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -21,7 +21,7 @@ func main() {
 	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr)) // for use with sumologic
 	// logger := kitlog.NewLogfmtLogger(os.Stderr) // preferable for local dev
 
-	if err := errs.NewDefaults(errs.End, false); err != nil {
+	if err := errs.Settings(errs.End, false); err != nil {
 		logger.Log("init_error", err)
 		os.Exit(1)
 	}
@@ -63,7 +63,6 @@ func main() {
 	// Debug
 	go func() {
 		debugAddr := ":8081"
-		// mux := http.NewServeMux()
 		http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 		http.Handle("/metrics", promhttp.Handler())
 		panic(http.ListenAndServe(debugAddr, nil))

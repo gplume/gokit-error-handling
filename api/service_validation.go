@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/gplume/gokit-error-handling/errs"
+	"github.com/gplume/errs"
 )
 
 type serviceValidation struct {

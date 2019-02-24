@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/gplume/gokit-error-handling/errs"
+	"github.com/gplume/errs"
 )
 
 // Service provides operations on strings.

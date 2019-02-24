@@ -33,6 +33,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/gplume/errs"
+  packages = ["."]
+  revision = "29f35537256f9e84c2aa77141c1e8998c11b77de"
+
+[[projects]]
+  branch = "master"
   name = "github.com/kr/logfmt"
   packages = ["."]
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
@@ -76,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "196260668504f5415096e84a4e0b9d8dab2413c12ff66ea8b49c91d40203b034"
+  inputs-digest = "2d8644f147d9b64bf26a3d42078380720298ca664f0b94ae2bdd0928b07643d3"
   solver-name = "gps-cdcl"
   solver-version = 1
